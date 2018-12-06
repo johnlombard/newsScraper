@@ -1,7 +1,6 @@
 // Dependencies
 var express = require("express");
 var mongojs = require("mongojs");
-// Require axios and cheerio. This makes the scraping possible
 var axios = require("axios");
 var cheerio = require("cheerio");
 
@@ -19,9 +18,10 @@ db.on("error", function(error) {
   console.log("Database Error:", error);
 });
 
-// Main route (simple Hello World Message)
+
+// Index route
 app.get("/", function(req, res) {
-  res.send("Hello world");
+  res.sendFile(path.join(__dirname + "../public/index.html"));
 });
 
 // Retrieve data from the db
