@@ -8,4 +8,7 @@ $("#scrape").on("click", function() {
         console.log(data)
         window.location = "/"
     })
+.then(function(data) {
+    console.log(data);
+    });
 });

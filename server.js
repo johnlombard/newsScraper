@@ -1,16 +1,19 @@
 // Dependencies
-var express = require("express");
-var mongojs = require("mongojs");
-var axios = require("axios");
-var cheerio = require("cheerio");
+const express = require("express");
+const mongojs = require("mongojs");
+const axios = require("axios");
+const logger = require("morgan");
+const cheerio = require("cheerio");
 
 // Initialize Express
-var app = express();
+const app = express();
 
 // Database configuration
-var databaseUrl = "news";
-var collections = ["articles"];
+const databaseUrl = "news";
+const collections = ["articles"];
 
+app.use(logger("dev"));
+app.use(express.static("public"));
 
 // Hook mongojs configuration to the db variable
 var db = mongojs(databaseUrl, collections);
@@ -55,8 +58,8 @@ app.get("/scrape", function(req, res) {
       if (title && link) {
         // Insert the data in the articles db
         db.articles.insert({
-          title: title,
-          link: link
+          title,
+          link
         },
         function(err, inserted) {
           if (err) {
