@@ -9,7 +9,7 @@ function getResults() {
       for (var i = 0; i < data.length; i++) {
         // ...populate #results with a p-tag that includes the note's title and object id
         $("#results").prepend("<p class='data-entry' data-id=" + data[i]._id + "><span class='dataTitle' data-id=" +
-          data[i]._id + ">" + data[i].title + "</span><span class=delete>X</span></p>");
+          data[i]._id + ">" + data[i].title + "</span><span class=delete>X</span><span class=save> Save</span></p>");
       }
     });
   }
@@ -29,7 +29,7 @@ $("#scrape").on("click", function() {
     .then(function(data) {
         // Add the title and delete button to the #results section
           $("#results").prepend("<p class='data-entry' data-id=" + data._id + "><span class='dataTitle' data-id=" +
-          data._id + ">" + data.title + "</span><span class=delete> X</span></p>");
+          data._id + ">" + data.title + "</span><span class=delete> X</span> </p>");
           // Clear the note and title inputs on the page
           $("#note").val("");
           $("#title").val("");
@@ -70,5 +70,29 @@ $("#clear-all").on("click", function() {
     }
   });
 });
+
+$(document).on("click", ".save", function() {
+  // Save the p tag that encloses the button
+  var selected = $(this).parent();
+  // Make an AJAX GET request to delete the specific note
+  // this uses the data-id of the p-tag, which is linked to the specific note
+  $.ajax({
+    type: "POST",
+    url: "/saved/" + selected.attr("data-id"),
+
+    // On successful call
+    success: function(response) {
+      // Remove the p-tag from the DOM
+      selected.remove();
+      // Clear the note and title inputs
+      $("#note").val("");
+      $("#title").val("");
+      // Make sure the #action-button is submit (in case it's update)
+      $("#action-button").html("<button id='make-new'>Submit</button>");
+      console.log(response);
+    }
+  });
+});
+
 
   

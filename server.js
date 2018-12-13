@@ -30,7 +30,20 @@ app.get("/", function(req, res) {
 // Retrieve data from the db
 app.get("/all", function(req, res) {
   // Find all results from the articles collection in the db
-  db.articles.find({}, function(error, found) {
+  db.notes.find({}, function(error, found) {
+    // Throw any errors to the console
+    if (error) {
+      console.log(error);
+    }
+    // If there are no errors, send the data to the browser as json
+    else {
+      res.json(found);
+    }
+  });
+});
+app.get("/saved", function(req, res) {
+  // Find all results from the articles collection in the db
+  db.notes.find({saved: true}, function(error, found) {
     // Throw any errors to the console
     if (error) {
       console.log(error);
@@ -53,14 +66,15 @@ app.get("/scrape", function(req, res) {
       // Save the text and href of each link enclosed in the current element
       var title = $(element).children("a").text();
       var link = $(element).children("a").attr("href");
-
+      
       // If this found element had both a title and a link
       if (title && link) {
         // Insert the data in the articles db
-        db.articles.insert({
+        db.notes.insert({
           title,
-          link
+          link,
         },
+        
         function(err, inserted) {
           if (err) {
             // Log the error if one is encountered during the query
@@ -77,7 +91,7 @@ app.get("/scrape", function(req, res) {
 
   app.get("/clearall", function(req, res) {
     // Remove every note from the notes collection
-    db.articles.remove({}, function(error, response) {
+    db.notes.remove({}, function(error, response) {
       // Log any errors to the console
       if (error) {
         console.log(error);
@@ -113,11 +127,25 @@ app.get("/delete/:id", function(req, res) {
     }
   );
 });
+
+app.post("/save/:id", function(req, res) {
+  // Remove a note using the objectID
+  notes.saved = true;
+  db.notes.save(notes,function(error,saved){
+    if (error) {
+      console.log(error);
+    }
+    else {
+      // Otherwise, send the response to the client (for AJAX success function)
+      res.send(saved);
+    }
+  });
+});
   // Send a "Scrape Complete" message to the browser
   res.send("Scrape Complete");
 });
 
-
+//
 // Listen on port 3000
 app.listen(3000, function() {
   console.log("App running on port 3000!");
